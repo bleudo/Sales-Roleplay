@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Recognition App</title>
+    <link rel="stylesheet" href= "/css/styles.css"> 
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sales Roleplay</h1>
+        </header>
+        <main>
+            <h2>Roleplay already started, go ahead with your opening line</h2>
+            <section class="call-controls">
+                <button id="start-record-btn">🎙️ Talk</button>
+                <button id="finishBtn">⏹️ Finish roleplay</button>
+            </section>
+            <section class="chat-container">
+                <div class="chat-header">
+                    <span>👥</span> Conversation
+                </div>
+                <div class="chat-content">
+                    <p id="transcript" class="message agent"></p>
+                    <p id="ai-response" class="message customer">Customer: I'll be using common CEO behaviors and objections to test your skills. Go ahead and make your initial contact.</p>
+                </div>
+            </section>
+        </main>
+        <footer>
+            <p>&copy; 2023 Speech Recognition Sales Roleplay. All rights reserved.</p>
+        </footer>
+    </div>
+    <script src="/js/voicetranscript.js"></script>
+</body>
+</html>
