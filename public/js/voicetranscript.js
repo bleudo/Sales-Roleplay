@@ -13,9 +13,10 @@ if (SpeechRecognition) {
   let isListening = false;
 
   const startBtn = document.getElementById("start-record-btn");
+  const finishBtn = document.getElementById("finishBtn");
   const transcriptParagraph = document.getElementById("transcript");
 
-  const inactivityTimeout = 4500;
+  const inactivityTimeout = 3000;
   let inactivityTimer;
 
   const resetInactivityTimer = () => {
@@ -37,6 +38,16 @@ if (SpeechRecognition) {
     console.log("Recognition started.");
     startBtn.disabled = true;
     resetInactivityTimer();
+  });
+
+  finishBtn.addEventListener("click", () => {
+    finalTranscript = '';
+    recognition.stop();
+    isListening = false;
+    console.log("Roleplay finished");
+    alert("Roleplay finished, click the Talk button to start again");
+    finishBtn.disabled = false;
+    startBtn.disabled = false;
   });
 
   recognition.addEventListener("result", (event) => {
