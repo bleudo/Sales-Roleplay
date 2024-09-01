@@ -14,8 +14,10 @@ if (SpeechRecognition) {
 
   const startBtn = document.getElementById("start-record-btn");
   const transcriptParagraph = document.getElementById("transcript");
+  const feedbackContent = document.getElementById("feedbackContent");
+  const finishBtn = document.getElementById("finishBtn");
 
-  const inactivityTimeout = 4500;
+  const inactivityTimeout = 3000;
   let inactivityTimer;
 
   const resetInactivityTimer = () => {
@@ -38,6 +40,8 @@ if (SpeechRecognition) {
     startBtn.disabled = true;
     resetInactivityTimer();
   });
+
+  finishBtn.addEventListener("click", generateFeedback);
 
   recognition.addEventListener("result", (event) => {
     let interimTranscript = "";
@@ -85,19 +89,32 @@ if (SpeechRecognition) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        text: finalTranscript
+        text: finalTranscript,
       }),
     })
-    .then(response => response.json())
+      .then((response) => response.json())
       .then((data) => {
         console.log("Response from API:", data.response);
         document.getElementById("ai-response").innerText =
           "Customer: " + data.response;
-        speakText(data.response)
+        speakText(data.response);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
+  }
+
+  async function generateFeedback() {
+    try {
+      const response = await fetch("/generate-feedback", { method: "POST" });
+      const data = await response.json();
+      feedbackContent.innerHTML = data.feedback;
+      console.log(data);
+    } catch (error) {
+      console.error("Error generating feedback:", error);
+      {
+      }
+    }
   }
 
   function speakText(text) {
