@@ -72,6 +72,8 @@ give me the answer organized in just one paragraph.`;
     const result = await model.generateContent(prompt);
     const feedback = result.response.text();
 
+    conversationHistory = [];
+
     res.json({ feedback });
   } catch (error) {
     console.error("Error generating feedback:", error);
