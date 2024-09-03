@@ -16,6 +16,7 @@ if (SpeechRecognition) {
   const transcriptParagraph = document.getElementById("transcript");
   const feedbackContent = document.getElementById("feedbackContent");
   const finishBtn = document.getElementById("finishBtn");
+  const aiResponse = document.getElementById("ai-response");
 
   const inactivityTimeout = 3000;
   let inactivityTimer;
@@ -95,8 +96,7 @@ if (SpeechRecognition) {
       .then((response) => response.json())
       .then((data) => {
         console.log("Response from API:", data.response);
-        document.getElementById("ai-response").innerText =
-          "Customer: " + data.response;
+        aiResponse.innerText = "Customer: " + data.response;
         speakText(data.response);
       })
       .catch((error) => {
@@ -109,6 +109,9 @@ if (SpeechRecognition) {
       const response = await fetch("/generate-feedback", { method: "POST" });
       const data = await response.json();
       feedbackContent.innerHTML = data.feedback;
+      finalTranscript = '';
+      transcriptParagraph.innerHTML = '';
+      aiResponse.innerText = '';
       console.log(data);
     } catch (error) {
       console.error("Error generating feedback:", error);
