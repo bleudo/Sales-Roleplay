@@ -99,7 +99,7 @@ button:hover {
 }
 
 .chat-content {
-  height: 300px;
+  min-height: 100px;
   overflow-y: auto;
   padding: 1rem;
 }
