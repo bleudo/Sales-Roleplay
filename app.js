@@ -2,14 +2,17 @@ import express from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
 const app = express();
 const port = 3000;
 
-app.set("view engine", "ejs");
-app.use(express.static("public"));
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+app.use(express.static(join(__dirname, 'public')));
 app.use(bodyParser.json());
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
@@ -26,7 +29,7 @@ Cuando decidas terminar la interacción, ya sea que se haya agendado una cita o 
 let conversationHistory = [];
 
 app.get("/", (req, res) => {
-  res.render("index.ejs", { response: null });
+    res.sendFile(join(__dirname, 'views', 'index.html'));
 });
 
 app.post("/process-speech", async (req, res) => {
