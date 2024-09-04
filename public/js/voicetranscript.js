@@ -5,18 +5,25 @@ if (SpeechRecognition) {
   console.log("SpeechRecognition is available in this browser.");
 
   const recognition = new SpeechRecognition();
-  recognition.lang = "en-US";
-  recognition.interimResults = true;
-  recognition.continuous = true;
-
+  
   let finalTranscript = "";
   let isListening = false;
-
+  
   const startBtn = document.getElementById("start-record-btn");
   const transcriptParagraph = document.getElementById("transcript");
   const feedbackContent = document.getElementById("feedbackContent");
   const finishBtn = document.getElementById("finishBtn");
   const aiResponse = document.getElementById("ai-response");
+  const languageSelected = document.getElementById("language")
+
+  recognition.lang = languageSelected.value;
+  recognition.interimResults = true;
+  recognition.continuous = true;
+
+languageSelected.addEventListener('change', () => {
+  recognition.lang = languageSelected.value;
+  console.log("Recognition language changed to:", recognition.lang);
+});
 
   const inactivityTimeout = 3000;
   let inactivityTimer;
@@ -35,6 +42,7 @@ if (SpeechRecognition) {
 
   startBtn.addEventListener("click", () => {
     finalTranscript = "";
+    recognition.lang = languageSelected.value;
     recognition.start();
     isListening = true;
     console.log("Recognition started.");
@@ -53,12 +61,21 @@ if (SpeechRecognition) {
         interimTranscript += event.results[i][0].transcript;
       }
     }
-    transcriptParagraph.innerHTML =
-      "You: " +
+    if(languageSelected.value === "en-US"){
+      transcriptParagraph.innerHTML =
+        "You: " +
+        finalTranscript +
+        '<i style="color:#999;">' +
+        interimTranscript +
+        "</i>";
+    }else{
+      transcriptParagraph.innerHTML =
+      "Tú: " +
       finalTranscript +
       '<i style="color:#999;">' +
       interimTranscript +
       "</i>";
+    }
     resetInactivityTimer();
   });
 
@@ -83,6 +100,8 @@ if (SpeechRecognition) {
   });
 
   function sendToServer(finalTranscript) {
+    let selectedLanguage = languageSelected.value
+
     console.log("Sending to server:", finalTranscript);
     fetch("/process-speech", {
       method: "POST",
@@ -91,12 +110,13 @@ if (SpeechRecognition) {
       },
       body: JSON.stringify({
         text: finalTranscript,
+        language: languageSelected.value,
       }),
     })
       .then((response) => response.json())
       .then((data) => {
         console.log("Response from API:", data.response);
-        aiResponse.innerText = "Customer: " + data.response;
+        aiResponse.innerText =  selectedLanguage === "en-US" ? "Customer: " + data.response : "Cliente: " + data.response;
         speakText(data.response);
       })
       .catch((error) => {
@@ -104,15 +124,36 @@ if (SpeechRecognition) {
       });
   }
 
+  function restartConversation(){
+    finalTranscript = '';
+    transcriptParagraph.innerHTML = '';
+    aiResponse.innerText = '';
+  }
+
   async function generateFeedback() {
+    const selectedLanguage = languageSelected.value;
+
     try {
-      const response = await fetch("/generate-feedback", { method: "POST" });
+      const response = await fetch("/generate-feedback", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ language: selectedLanguage }),
+      });
       const data = await response.json();
       feedbackContent.innerHTML = data.feedback;
-      finalTranscript = '';
-      transcriptParagraph.innerHTML = '';
-      aiResponse.innerText = '';
       console.log(data);
+      if (languageSelected.value === "en-US") {
+        alert(
+          "Roleplay finished.📞 \n\nTake a look at  the feedback below ⬇ \n\nThen click the talk button to start a new roleplay!🚩"
+        );
+      } else {
+        alert(
+          "Juego de rol finalizado.📞 \n\nMira la retroalimentación a debajo ⬇ \n\nLuego, haz clic en el botón talk para comenzar un nuevo juego de rol!🚩"
+        );
+      }
+      restartConversation();
     } catch (error) {
       console.error("Error generating feedback:", error);
       {
@@ -123,8 +164,8 @@ if (SpeechRecognition) {
   function speakText(text) {
     if ("speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "en-US";
-      utterance.rate = 1.3;
+      utterance.lang = languageSelected.value;
+      utterance.rate = 1.4;
       speechSynthesis.speak(utterance);
     } else {
       console.error("Web Speech API is not supported in this browser.");
