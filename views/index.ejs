@@ -13,6 +13,15 @@
       </header>
       <main>
         <h2>Roleplay already started, go ahead with your opening line</h2>
+        <section class="language-form-container">
+          <form id="language-form" method="post" action="/process-speech">
+            <label for="language">Choose language:</label>
+            <select name="language" id="language">
+              <option value="en-US">English</option>
+              <option value="es-ES">Español</option>
+            </select>
+          </form>
+        </section>
         <section class="call-controls">
           <button id="start-record-btn">🎙️ Talk</button>
           <button id="finishBtn">⏹️ Finish roleplay</button>
@@ -22,12 +31,9 @@
           <div class="chat-content">
             <p id="transcript" class="message agent"></p>
             <p id="ai-response" class="message customer">
-              Customer: I'll be using common CEO behaviors and objections to
-              test your skills. Go ahead and make your initial contact.
             </p>
           </div>
         </section>
-
         <section class="feedback-container">
           <h2 class="feedback-header">Conversation Feedback</h2>
           <div id="feedbackContent" class="feedback-content">
